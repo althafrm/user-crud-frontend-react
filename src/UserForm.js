@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     Button,
     Grid2,
@@ -6,9 +6,23 @@ import {
     Typography,
 } from '@mui/material';
 
-const UserForm = props => {
+const UserForm = ({ submitted, data, isEdit, addUser, updateUser }) => {
     const [id, setId] = useState(0);
     const [name, setName] = useState('');
+
+    useEffect(() => {
+        if (!submitted) {
+            setId(0);
+            setName('');
+        }
+    }, [submitted]);
+
+    useEffect(() => {
+        if (data?.id && data.id !== 0) {
+            setId(data.id);
+            setName(data.name);
+        }
+    }, [data]);
 
     return (
         <Grid2
@@ -79,6 +93,7 @@ const UserForm = props => {
             </Grid2>
 
             <Button
+                disabled={!id || !name}
                 sx={{
                     backgroundColor: '#00c6c6',
                     color: '#000',
@@ -90,7 +105,12 @@ const UserForm = props => {
                         backgroundColor: '#00c6c6',
                     },
                 }}
-            >Add</Button>
+                onClick={() => isEdit
+                    ? updateUser({ id, name })
+                    : addUser({ id, name })}
+            >
+                {isEdit ? 'Update' : 'Add'}
+            </Button>
         </Grid2>
     );
 }
